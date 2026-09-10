@@ -5,16 +5,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Eternal Velvet • Romantic Love Meter</title>
 
-  <!-- Google Fonts: Luxury Serif & Romantic Handwriting -->
+  <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Cinzel+Decorative:wght@700&family=Italiana&family=Marcellus&family=Space+Mono&display=swap" rel="stylesheet">
   
+  <!-- MediaPipe Face Detection for browser-side human verification -->
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_detection/face_detection.js" crossorigin="anonymous"></script>
+
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-  <!-- Floating Hearts on the Sides -->
+  <!-- Floating Hearts Canvas -->
   <canvas id="heartsCanvas"></canvas>
 
   <!-- Sound Toggle -->
@@ -25,7 +29,6 @@
   </div>
 
   <main class="page-wrapper">
-    <!-- Ornate Card Wrapper -->
     <div class="velvet-card">
       
       <!-- Victorian Gold Corner Ornaments -->
@@ -38,10 +41,8 @@
       <header class="card-header">
         <div class="filigree-crown">⚜ ✦ ⚜</div>
         <h1 class="ornate-title">Our Love Chronicle</h1>
-        <div class="gold-divider">
-          <span>◆</span>
-        </div>
-        <p class="subtitle">Immortalize your sweetest memories and discover your souls' resonance.</p>
+        <div class="gold-divider"><span>◆</span></div>
+        <p class="subtitle">Upload snapshots of both hearts and chronicle your warmest moments to reveal your soul resonance.</p>
       </header>
 
       <!-- Center-Aligned Form -->
@@ -57,10 +58,10 @@
           </div>
         </div>
 
-        <!-- Polaroid Memories Creator -->
+        <!-- Polaroid Memories Section -->
         <div class="input-block">
-          <label class="gold-label">Our Cherished Moments</label>
-          <p class="section-hint">Upload snapshots from your journey to preserve them as classic Polaroids.</p>
+          <label class="gold-label">Our Cherished Polaroids</label>
+          <p class="section-hint">Upload photos featuring both partners. Then, pour your genuine best memories into the captions below.</p>
           
           <div id="polaroidScrapbook" class="polaroids-grid">
             <!-- Dynamic Polaroid cards appear here -->
@@ -74,13 +75,16 @@
         <!-- Secret Note -->
         <div class="input-block secret-block">
           <details>
-            <summary>💌 Click to enclose a secret love note...</summary>
-            <textarea id="secretNote" rows="3" placeholder="This sweet whisper stays hidden until the meter is calculated..."></textarea>
+            <summary>💌 Enclose a secret note...</summary>
+            <textarea id="secretNote" rows="3" placeholder="This tender whisper stays asleep until your reading is unveiled..."></textarea>
           </details>
         </div>
 
-        <!-- Calculate Trigger Button -->
-        <button type="submit" class="calculate-btn">
+        <!-- Human Detection Status Box -->
+        <div id="validationNotice" class="validation-box" style="display: none;"></div>
+
+        <!-- Submit Button -->
+        <button type="submit" id="submitBtn" class="calculate-btn">
           <span class="btn-text">Reveal Our Love Meter</span>
           <span class="btn-glow"></span>
         </button>
@@ -91,7 +95,6 @@
       <section id="resultsSection" class="results-panel" style="display: none;">
         <div class="gold-divider"><span>✦ ⚜ ✦</span></div>
 
-        <!-- Ornate Circular Meter -->
         <div class="meter-frame">
           <div class="vintage-dial-ring"></div>
           <div class="inner-heart-core">
@@ -104,7 +107,7 @@
         <h2 id="verdictTitle" class="verdict-title">Velvet Constellation</h2>
         <p id="verdictDesc" class="verdict-description"></p>
 
-        <!-- Metric Cards -->
+        <!-- Dynamic Metric Breakdown based on written memories -->
         <div class="metrics-row">
           <div class="metric-box">
             <span class="metric-icon">🍷</span>
@@ -118,12 +121,12 @@
           </div>
           <div class="metric-box">
             <span class="metric-icon">🪐</span>
-            <span class="metric-name">Destiny Index</span>
+            <span class="metric-name">Destiny Resonance</span>
             <strong id="mDestiny">--%</strong>
           </div>
         </div>
 
-        <!-- Secret Letter Unlocked -->
+        <!-- Secret Letter -->
         <div id="unlockedLetterCard" class="unlocked-parchment" style="display: none;">
           <div class="wax-seal">⚜</div>
           <p id="unlockedLetterText"></p>
