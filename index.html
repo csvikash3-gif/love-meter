@@ -3,26 +3,22 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Eternal Velvet • Romantic Love Meter</title>
+  <title>Eternal Velvet • Couple Love Chronicle</title>
 
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Cinzel+Decorative:wght@700&family=Italiana&family=Marcellus&family=Space+Mono&display=swap" rel="stylesheet">
-  
-  <!-- MediaPipe Face Detection for browser-side human verification -->
-  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_detection/face_detection.js" crossorigin="anonymous"></script>
+
+  <!-- Face-API.js for Gender & Face Detection -->
+  <script defer src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api/dist/face-api.min.js"></script>
 
   <style>
-    /* =========================================================
-       ROYAL MAROON & GOLD FILIGREE DESIGN SYSTEM
-    ========================================================= */
     :root {
       --maroon-deep: #190308;
       --maroon-rich: #2f060f;
       --maroon-wine: #480918;
-      --maroon-card: rgba(47, 6, 15, 0.85);
+      --maroon-card: rgba(47, 6, 15, 0.88);
       --gold-glow: #f5d487;
       --gold-dark: #b88628;
       --rose-crimson: #c93d58;
@@ -30,18 +26,13 @@
       --text-main: #fdf5ec;
       --text-muted: #d9b8bf;
       --border-gold: rgba(245, 212, 135, 0.35);
-      
       --font-title: 'Cinzel Decorative', cursive;
       --font-serif: 'Italiana', serif;
       --font-body: 'Marcellus', serif;
       --font-hand: 'Caveat', cursive;
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
       background: radial-gradient(circle at 50% 20%, #560c1e 0%, var(--maroon-rich) 50%, var(--maroon-deep) 100%);
@@ -49,25 +40,20 @@
       font-family: var(--font-body);
       min-height: 100vh;
       overflow-x: hidden;
-      position: relative;
       padding: 2.5rem 1rem;
     }
 
-    /* Side-Flying Hearts Canvas */
     #heartsCanvas {
       position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
       pointer-events: none;
       z-index: 0;
     }
 
     .top-bar {
       position: fixed;
-      top: 1.2rem;
-      right: 1.2rem;
+      top: 1.2rem; right: 1.2rem;
       z-index: 100;
     }
 
@@ -84,27 +70,21 @@
       transition: all 0.3s ease;
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
     }
+    .gold-pill-btn:hover { background: var(--maroon-wine); }
 
-    .gold-pill-btn:hover {
-      background: var(--maroon-wine);
-      box-shadow: 0 0 15px rgba(245, 212, 135, 0.4);
-    }
-
-    /* Center App Wrapper */
     .page-wrapper {
       position: relative;
       z-index: 1;
-      max-width: 780px;
+      max-width: 820px;
       margin: 0 auto;
     }
 
-    /* Ornate Victorian Card */
     .velvet-card {
       position: relative;
       background: var(--maroon-card);
       border: 2px solid var(--gold-dark);
       border-radius: 28px;
-      padding: 3.5rem 2.5rem;
+      padding: 3.5rem 2.2rem;
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
       box-shadow: 
@@ -113,7 +93,6 @@
         inset 0 0 50px rgba(0, 0, 0, 0.4);
     }
 
-    /* Gold Corner Scroll Ornaments */
     .corner-ornament {
       position: absolute;
       color: var(--gold-glow);
@@ -121,12 +100,11 @@
       opacity: 0.75;
       user-select: none;
     }
-    .top-left { top: 12px; left: 16px; transform: scaleX(1); }
+    .top-left { top: 12px; left: 16px; }
     .top-right { top: 12px; right: 16px; transform: scaleX(-1); }
-    .bottom-left { bottom: 12px; left: 16px; transform: scaleX(1) scaleY(-1); }
+    .bottom-left { bottom: 12px; left: 16px; transform: scaleY(-1); }
     .bottom-right { bottom: 12px; right: 16px; transform: scaleX(-1) scaleY(-1); }
 
-    /* Header Elements */
     .card-header {
       text-align: center;
       margin-bottom: 2.5rem;
@@ -163,20 +141,16 @@
       height: 1px;
       background: linear-gradient(to right, transparent, var(--gold-dark), transparent);
     }
-    .gold-divider span {
-      padding: 0 10px;
-      font-size: 0.9rem;
-    }
+    .gold-divider span { padding: 0 10px; }
 
     .subtitle {
       color: var(--text-muted);
       font-size: 1.05rem;
-      max-width: 500px;
+      max-width: 520px;
       margin: 0 auto;
       line-height: 1.6;
     }
 
-    /* Centered Form Layout */
     .centered-form {
       display: flex;
       flex-direction: column;
@@ -185,7 +159,7 @@
 
     .input-block {
       width: 100%;
-      max-width: 580px;
+      max-width: 650px;
       margin-bottom: 2.2rem;
       text-align: center;
     }
@@ -205,7 +179,6 @@
       margin-bottom: 1.2rem;
     }
 
-    /* Centered Names Row */
     .names-row {
       display: grid;
       grid-template-columns: 1fr auto 1fr;
@@ -230,7 +203,6 @@
     .names-row input:focus {
       border-color: var(--gold-glow);
       box-shadow: 0 0 15px rgba(245, 212, 135, 0.3);
-      background: rgba(25, 3, 8, 0.9);
     }
 
     .heart-pulse-icon {
@@ -239,7 +211,7 @@
       animation: heartPulse 1.8s infinite ease-in-out;
     }
 
-    /* Polaroid Scrapbook */
+    /* Polaroids & Memory Section */
     .polaroids-grid {
       display: flex;
       flex-direction: column;
@@ -253,97 +225,109 @@
       position: relative;
       background: var(--polaroid-paper);
       width: 100%;
-      max-width: 380px;
-      padding: 14px 14px 22px 14px;
-      border-radius: 4px;
-      box-shadow: 
-        0 10px 25px rgba(0, 0, 0, 0.5),
-        0 1px 4px rgba(0, 0, 0, 0.2);
-      transform: rotate(-1.5deg);
+      max-width: 440px;
+      padding: 16px 16px 24px 16px;
+      border-radius: 6px;
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.5);
+      transform: rotate(-1deg);
       transition: transform 0.3s ease;
     }
 
-    .polaroid-frame:nth-child(even) {
-      transform: rotate(1.8deg);
-    }
-
-    .polaroid-frame:hover {
-      transform: rotate(0deg) scale(1.02);
-      z-index: 5;
-    }
+    .polaroid-frame:nth-child(even) { transform: rotate(1deg); }
 
     .washi-tape-strip {
       position: absolute;
-      top: -10px;
-      left: 50%;
+      top: -10px; left: 50%;
       transform: translateX(-50%);
-      width: 90px;
-      height: 22px;
+      width: 90px; height: 22px;
       background: rgba(245, 212, 135, 0.7);
       box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-      border-radius: 1px;
     }
 
     .photo-slot {
       width: 100%;
-      height: 240px;
-      background: #2a2628;
-      border: 1px dashed rgba(245, 212, 135, 0.3);
+      min-height: 250px;
+      background: #1e1317;
+      border: 2px dashed rgba(184, 134, 40, 0.4);
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      cursor: pointer;
       overflow: hidden;
       position: relative;
+      border-radius: 4px;
+      padding: 1rem;
     }
 
     .polaroid-img-preview {
       width: 100%;
-      height: 100%;
+      height: 240px;
       object-fit: cover;
       display: none;
+      border-radius: 4px;
     }
 
-    .photo-placeholder {
-      color: #cbbabf;
-      text-align: center;
-      padding: 1rem;
-    }
-    .photo-placeholder span {
-      display: block;
-      font-size: 2rem;
-      margin-bottom: 4px;
-    }
-    .photo-placeholder p {
-      font-size: 0.85rem;
+    .upload-btn-styled {
+      background: linear-gradient(135deg, #f5d487, #b88628);
+      color: #20040b;
+      font-weight: bold;
+      border: none;
+      padding: 0.65rem 1.3rem;
+      border-radius: 20px;
+      cursor: pointer;
       font-family: var(--font-body);
+      font-size: 0.9rem;
+      margin-top: 8px;
+    }
+
+    .gender-detection-badge {
+      display: none;
+      margin-top: 8px;
+      font-size: 0.8rem;
+      background: rgba(30, 4, 10, 0.85);
+      color: var(--gold-glow);
+      padding: 4px 10px;
+      border-radius: 12px;
+      border: 1px solid var(--gold-dark);
+    }
+
+    /* Column for Memories */
+    .memories-column-wrapper {
+      margin-top: 14px;
+      text-align: left;
+    }
+
+    .memories-column-wrapper label {
+      display: block;
+      font-family: var(--font-body);
+      font-size: 0.85rem;
+      color: #4b1b26;
+      font-weight: bold;
+      margin-bottom: 4px;
     }
 
     .polaroid-caption-input {
       width: 100%;
-      margin-top: 14px;
-      background: transparent;
-      border: none;
-      border-bottom: 1px dashed rgba(0, 0, 0, 0.2);
-      text-align: center;
+      background: rgba(255, 248, 240, 0.9);
+      border: 1px solid #d4b2b8;
+      border-radius: 8px;
       font-family: var(--font-hand);
-      font-size: 1.5rem;
+      font-size: 1.45rem;
       color: #2b171c;
       outline: none;
-      padding: 4px;
+      padding: 8px 10px;
+      resize: vertical;
     }
 
-    .polaroid-caption-input::placeholder {
-      color: #a49195;
+    .polaroid-caption-input:focus {
+      border-color: var(--rose-crimson);
+      box-shadow: 0 0 6px rgba(201, 61, 88, 0.3);
     }
 
     .btn-remove-polaroid {
       position: absolute;
-      top: -8px;
-      right: -8px;
-      width: 26px;
-      height: 26px;
+      top: -8px; right: -8px;
+      width: 28px; height: 28px;
       background: var(--maroon-wine);
       color: var(--gold-glow);
       border: 1px solid var(--gold-glow);
@@ -353,7 +337,6 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.4);
     }
 
     .gold-outline-btn {
@@ -368,67 +351,30 @@
       cursor: pointer;
       transition: all 0.3s;
     }
-
-    .gold-outline-btn:hover {
-      background: rgba(245, 212, 135, 0.15);
-      box-shadow: 0 0 15px rgba(245, 212, 135, 0.25);
-    }
-
-    .secret-block details {
-      background: rgba(25, 3, 8, 0.6);
-      border: 1px solid var(--border-gold);
-      border-radius: 16px;
-      padding: 1rem;
-    }
-
-    .secret-block summary {
-      color: var(--gold-glow);
-      font-family: var(--font-body);
-      font-size: 0.95rem;
-      cursor: pointer;
-      outline: none;
-    }
-
-    .secret-block textarea {
-      width: 100%;
-      margin-top: 0.8rem;
-      background: rgba(15, 1, 4, 0.8);
-      border: 1px solid var(--border-gold);
-      border-radius: 12px;
-      padding: 0.8rem;
-      color: var(--text-main);
-      font-family: var(--font-hand);
-      font-size: 1.45rem;
-      outline: none;
-    }
+    .gold-outline-btn:hover { background: rgba(245, 212, 135, 0.15); }
 
     .validation-box {
       width: 100%;
-      max-width: 580px;
+      max-width: 600px;
       margin-bottom: 1.5rem;
       padding: 1rem 1.4rem;
       border-radius: 16px;
-      font-family: var(--font-body);
       font-size: 0.95rem;
-      line-height: 1.5;
       text-align: center;
       animation: fadeIn 0.4s ease;
     }
-
     .validation-box.error {
-      background: rgba(100, 10, 25, 0.7);
-      border: 1px solid var(--rose-crimson);
-      color: #ffd8df;
+      background: rgba(100, 10, 25, 0.85);
+      border: 1.5px solid var(--rose-crimson);
+      color: #ffe6ea;
     }
-
     .validation-box.scanning {
-      background: rgba(45, 15, 25, 0.7);
+      background: rgba(45, 15, 25, 0.85);
       border: 1px dashed var(--gold-glow);
       color: var(--gold-glow);
     }
 
     .calculate-btn {
-      position: relative;
       background: linear-gradient(135deg, #f5d487 0%, #b88628 50%, #c93d58 100%);
       border: none;
       border-radius: 50px;
@@ -436,19 +382,14 @@
       cursor: pointer;
       box-shadow: 0 0 30px rgba(245, 212, 135, 0.4);
       transition: all 0.35s ease;
-      overflow: hidden;
     }
-
     .calculate-btn .btn-text {
-      position: relative;
-      z-index: 2;
       font-family: var(--font-title);
       font-size: 1rem;
       font-weight: 700;
       letter-spacing: 2px;
       color: var(--maroon-deep);
     }
-
     .calculate-btn:hover {
       transform: translateY(-3px) scale(1.02);
       box-shadow: 0 0 45px rgba(245, 212, 135, 0.65);
@@ -457,14 +398,13 @@
     /* Results */
     .results-panel {
       text-align: center;
-      margin-top: 2rem;
-      animation: fadeIn 1.2s ease forwards;
+      margin-top: 2.5rem;
+      animation: fadeIn 1s ease forwards;
     }
 
     .meter-frame {
       position: relative;
-      width: 220px;
-      height: 220px;
+      width: 220px; height: 220px;
       margin: 0 auto 1.8rem;
       display: flex;
       align-items: center;
@@ -473,16 +413,14 @@
 
     .vintage-dial-ring {
       position: absolute;
-      width: 100%;
-      height: 100%;
+      width: 100%; height: 100%;
       border-radius: 50%;
       border: 2px dashed var(--gold-glow);
       animation: rotateRing 35s linear infinite;
     }
 
     .inner-heart-core {
-      width: 160px;
-      height: 160px;
+      width: 160px; height: 160px;
       border-radius: 50%;
       background: radial-gradient(circle, var(--maroon-wine) 0%, var(--maroon-deep) 100%);
       border: 2px solid var(--gold-glow);
@@ -491,29 +429,19 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      position: relative;
     }
 
     .beating-heart {
       font-size: 2.2rem;
       color: var(--rose-crimson);
       animation: heartPulse 1.2s infinite ease-in-out;
-      line-height: 1;
     }
 
     .meter-percentage {
       font-family: var(--font-serif);
-      font-size: 2.4rem;
-      line-height: 1;
+      font-size: 2.6rem;
       color: var(--gold-glow);
       margin-top: 2px;
-    }
-
-    .meter-sub {
-      font-family: var(--font-title);
-      font-size: 0.65rem;
-      letter-spacing: 2px;
-      color: var(--text-muted);
     }
 
     .verdict-title {
@@ -526,10 +454,10 @@
     .verdict-description {
       color: var(--text-muted);
       line-height: 1.8;
-      max-width: 560px;
+      max-width: 580px;
       margin: 0 auto 2.5rem;
       font-style: italic;
-      font-size: 1.05rem;
+      font-size: 1.1rem;
     }
 
     .metrics-row {
@@ -549,77 +477,34 @@
       align-items: center;
       gap: 0.3rem;
     }
-
-    .metric-icon { font-size: 1.5rem; }
     .metric-name { font-size: 0.8rem; color: var(--text-muted); }
     .metric-box strong { font-family: var(--font-serif); font-size: 1.8rem; color: var(--gold-glow); }
-
-    .unlocked-parchment {
-      background: #fbf5e8;
-      border: 2px solid #e0c89a;
-      border-radius: 6px;
-      padding: 2.2rem 1.8rem;
-      margin: 0 auto 2.5rem;
-      max-width: 500px;
-      position: relative;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-      transform: rotate(-0.5deg);
-    }
-
-    .wax-seal {
-      position: absolute;
-      top: -14px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: var(--maroon-wine);
-      color: var(--gold-glow);
-      border: 1px solid var(--gold-glow);
-      border-radius: 50%;
-      width: 32px;
-      height: 32px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.8rem;
-    }
-
-    #unlockedLetterText {
-      font-family: var(--font-hand);
-      font-size: 1.8rem;
-      color: #2b060f;
-      line-height: 1.4;
-    }
 
     @keyframes heartPulse {
       0%, 100% { transform: scale(1); opacity: 0.85; }
       50% { transform: scale(1.22); opacity: 1; }
     }
-
     @keyframes rotateRing {
       from { transform: rotate(0deg); }
       to { transform: rotate(360deg); }
     }
-
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(20px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
     @media (max-width: 600px) {
-      .velvet-card { padding: 2.5rem 1.4rem; }
+      .velvet-card { padding: 2.5rem 1.2rem; }
       .ornate-title { font-size: 2rem; }
-      .names-row { grid-template-columns: 1fr; gap: 0.5rem; }
+      .names-row { grid-template-columns: 1fr; }
       .heart-pulse-icon { display: none; }
-      .photo-slot { height: 190px; }
     }
   </style>
 </head>
 <body>
 
-  <!-- Floating Hearts on the Sides -->
   <canvas id="heartsCanvas"></canvas>
 
-  <!-- Sound Toggle -->
   <div class="top-bar">
     <button id="rainToggle" class="gold-pill-btn" type="button">
       <span>🌧️ Ambient Rain: Off</span>
@@ -628,65 +513,46 @@
 
   <main class="page-wrapper">
     <div class="velvet-card">
-      
-      <!-- Victorian Gold Corner Ornaments -->
       <div class="corner-ornament top-left">❧</div>
       <div class="corner-ornament top-right">☙</div>
       <div class="corner-ornament bottom-left">❧</div>
       <div class="corner-ornament bottom-right">☙</div>
 
-      <!-- Header -->
       <header class="card-header">
         <div class="filigree-crown">⚜ ✦ ⚜</div>
         <h1 class="ornate-title">Our Love Chronicle</h1>
         <div class="gold-divider"><span>◆</span></div>
-        <p class="subtitle">Upload snapshots of both hearts and chronicle your warmest moments to reveal your soul resonance.</p>
+        <p class="subtitle">Upload photos of both a girl and a boy. Fill in your genuine best memories to unveil an authentic love score calculated entirely from your journey.</p>
       </header>
 
-      <!-- Center-Aligned Form -->
       <form id="loveForm" class="centered-form">
-        
-        <!-- Names Section -->
         <div class="input-block">
           <label class="gold-label">Whose hearts are joined?</label>
           <div class="names-row">
-            <input type="text" id="partner1" placeholder="First Name..." required />
+            <input type="text" id="partner1" placeholder="Girl's Name..." required />
             <div class="heart-pulse-icon">♥</div>
-            <input type="text" id="partner2" placeholder="Second Name..." required />
+            <input type="text" id="partner2" placeholder="Boy's Name..." required />
           </div>
         </div>
 
-        <!-- Polaroid Memories Section -->
         <div class="input-block">
-          <label class="gold-label">Our Cherished Polaroids</label>
-          <p class="section-hint">Upload photos featuring both partners. Then, pour your genuine best memories into the captions below.</p>
-          
+          <label class="gold-label">Memories & Couple Polaroids</label>
+          <p class="section-hint">Photo verification requires both partners (1 Female & 1 Male). The Love Meter percentage is calculated strictly from your written memories!</p>
+
           <div id="polaroidScrapbook" class="polaroids-grid">
             <!-- Dynamic Polaroid cards appear here -->
           </div>
 
           <button type="button" id="addMemoryBtn" class="gold-outline-btn">
-            + Pin Another Polaroid Memory
+            + Pin Another Moment & Memory
           </button>
         </div>
 
-        <!-- Secret Note -->
-        <div class="input-block secret-block">
-          <details>
-            <summary>💌 Enclose a secret note...</summary>
-            <textarea id="secretNote" rows="3" placeholder="This tender whisper stays asleep until your reading is unveiled..."></textarea>
-          </details>
-        </div>
-
-        <!-- Human Detection Status Box -->
         <div id="validationNotice" class="validation-box" style="display: none;"></div>
 
-        <!-- Submit Button -->
         <button type="submit" id="submitBtn" class="calculate-btn">
           <span class="btn-text">Reveal Our Love Meter</span>
-          <span class="btn-glow"></span>
         </button>
-
       </form>
 
       <!-- Results Display -->
@@ -696,52 +562,373 @@
         <div class="meter-frame">
           <div class="vintage-dial-ring"></div>
           <div class="inner-heart-core">
-            <div class="beating-heart" id="beatingHeart">♥</div>
+            <div class="beating-heart">♥</div>
             <span class="meter-percentage" id="scoreVal">0%</span>
-            <span class="meter-sub">Affinity</span>
           </div>
         </div>
 
         <h2 id="verdictTitle" class="verdict-title">Velvet Constellation</h2>
         <p id="verdictDesc" class="verdict-description"></p>
 
-        <!-- Dynamic Metric Breakdown -->
         <div class="metrics-row">
           <div class="metric-box">
-            <span class="metric-icon">🍷</span>
-            <span class="metric-name">Warmth & Hearth</span>
+            <span>🍷</span>
+            <span class="metric-name">Warmth & Home</span>
             <strong id="mWarmth">--%</strong>
           </div>
           <div class="metric-box">
-            <span class="metric-icon">✨</span>
+            <span>✨</span>
             <span class="metric-name">Shared Laughter</span>
             <strong id="mLaughter">--%</strong>
           </div>
           <div class="metric-box">
-            <span class="metric-icon">🪐</span>
-            <span class="metric-name">Destiny Resonance</span>
+            <span>🪐</span>
+            <span class="metric-name">Emotional Gravity</span>
             <strong id="mDestiny">--%</strong>
           </div>
         </div>
-
-        <!-- Secret Letter -->
-        <div id="unlockedLetterCard" class="unlocked-parchment" style="display: none;">
-          <div class="wax-seal">⚜</div>
-          <p id="unlockedLetterText"></p>
-        </div>
-
-        <!-- Save Keepsake Certificate -->
-        <div class="save-dock">
-          <button type="button" id="saveKeepsakeBtn" class="gold-outline-btn">
-            📜 Save Our Keepsake Certificate (PNG)
-          </button>
-        </div>
-
       </section>
 
     </div>
   </main>
 
-  <script src="script.js"></script>
+  <script>
+    /* 1. SIDE-FLOATING HEARTS CANVAS */
+    const canvas = document.getElementById('heartsCanvas');
+    const ctx = canvas.getContext('2d');
+    let hearts = [];
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    class SideHeart {
+      constructor() { this.init(true); }
+      init(scatter = false) {
+        const margin = canvas.width * 0.16;
+        this.isLeft = Math.random() > 0.5;
+        this.baseX = this.isLeft ? Math.random() * margin : canvas.width - Math.random() * margin;
+        this.x = this.baseX;
+        this.y = scatter ? Math.random() * canvas.height : canvas.height + 30;
+        this.size = Math.random() * 12 + 10;
+        this.speedY = Math.random() * 0.7 + 0.4;
+        this.swayAngle = Math.random() * Math.PI * 2;
+        this.swaySpeed = Math.random() * 0.02 + 0.01;
+        this.swayDistance = Math.random() * 16 + 6;
+        this.alpha = Math.random() * 0.45 + 0.3;
+        const hues = ['rgba(245, 212, 135,', 'rgba(201, 61, 88,', 'rgba(255, 230, 235,'];
+        this.colorPrefix = hues[Math.floor(Math.random() * hues.length)];
+      }
+      update() {
+        this.y -= this.speedY;
+        this.swayAngle += this.swaySpeed;
+        this.x = this.baseX + Math.sin(this.swayAngle) * this.swayDistance;
+        if (this.y < -30) this.init(false);
+      }
+      draw() {
+        ctx.save();
+        ctx.translate(this.x, this.y);
+        ctx.fillStyle = `${this.colorPrefix} ${this.alpha})`;
+        ctx.shadowColor = `${this.colorPrefix} 0.6)`;
+        ctx.shadowBlur = 8;
+        ctx.beginPath();
+        const s = this.size;
+        ctx.moveTo(0, -s * 0.33);
+        ctx.bezierCurveTo(-s * 0.5, -s * 0.8, -s, -s * 0.3, 0, s * 0.6);
+        ctx.bezierCurveTo(s, -s * 0.3, s * 0.5, -s * 0.8, 0, -s * 0.33);
+        ctx.fill();
+        ctx.restore();
+      }
+    }
+    for (let i = 0; i < 34; i++) hearts.push(new SideHeart());
+    function animateHearts() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      hearts.forEach(h => { h.update(); h.draw(); });
+      requestAnimationFrame(animateHearts);
+    }
+    animateHearts();
+
+    /* 2. AMBIENT SOUND */
+    let audioCtx = null, soundOn = false, noiseNode = null;
+    const rainBtn = document.getElementById('rainToggle');
+    rainBtn.addEventListener('click', () => {
+      if (!soundOn) {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const bufferSize = audioCtx.sampleRate * 2;
+        const noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+        const output = noiseBuffer.getChannelData(0);
+        let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0;
+        for (let i = 0; i < bufferSize; i++) {
+          const white = Math.random() * 2 - 1;
+          b0 = 0.99886 * b0 + white * 0.0555179;
+          b1 = 0.99332 * b1 + white * 0.0750759;
+          b2 = 0.96900 * b2 + white * 0.1538520;
+          b3 = 0.86650 * b3 + white * 0.3104856;
+          b4 = 0.55000 * b4 + white * 0.5329522;
+          b5 = -0.7616 * b5 - white * 0.0168980;
+          output[i] = (b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362) * 0.035;
+          b6 = white * 0.115926;
+        }
+        noiseNode = audioCtx.createBufferSource();
+        noiseNode.buffer = noiseBuffer;
+        noiseNode.loop = true;
+        const filter = audioCtx.createBiquadFilter();
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(650, audioCtx.currentTime);
+        noiseNode.connect(filter);
+        filter.connect(audioCtx.destination);
+        noiseNode.start();
+        soundOn = true;
+        rainBtn.innerHTML = '<span>🌧️ Ambient Rain: On</span>';
+      } else {
+        if (noiseNode) { noiseNode.stop(); noiseNode.disconnect(); }
+        soundOn = false;
+        rainBtn.innerHTML = '<span>🌧️ Ambient Rain: Off</span>';
+      }
+    });
+
+    /* 3. FACE & GENDER DETECTION SETUP (Boy & Girl Check) */
+    let modelsLoaded = false;
+    async function loadModels() {
+      const MODEL_URL = 'https://cdn.jsdelivr.net/npm/@vladmandic/face-api/model/';
+      try {
+        await faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL);
+        await faceapi.nets.ageGenderNet.loadFromUri(MODEL_URL);
+        modelsLoaded = true;
+      } catch (err) {
+        console.warn("Face model CDN note: Fallback enabled.", err);
+      }
+    }
+    window.addEventListener('load', loadModels);
+
+    async function analyzePhotoGender(img) {
+      if (!modelsLoaded) return { males: 1, females: 1 }; // graceful fallback
+      const detections = await faceapi.detectAllFaces(img, new faceapi.TinyFaceDetectorOptions()).withAgeAndGender();
+      let males = 0, females = 0;
+      detections.forEach(d => {
+        if (d.gender === 'female') females++;
+        else if (d.gender === 'male') males++;
+      });
+      return { males, females, total: detections.length };
+    }
+
+    /* 4. POLAROID SCRAPBOOK & MEMORIES COLUMN */
+    const scrapbook = document.getElementById('polaroidScrapbook');
+    const addMemoryBtn = document.getElementById('addMemoryBtn');
+    const validationNotice = document.getElementById('validationNotice');
+
+    function createPolaroidCard(index = 1) {
+      const card = document.createElement('div');
+      card.className = 'polaroid-frame';
+      card.dataset.males = '0';
+      card.dataset.females = '0';
+      card.dataset.hasPhoto = 'false';
+
+      card.innerHTML = `
+        <div class="washi-tape-strip"></div>
+        ${index > 1 ? '<button type="button" class="btn-remove-polaroid" title="Remove">&times;</button>' : ''}
+        
+        <div class="photo-slot">
+          <img class="polaroid-img-preview" alt="Couple Preview" />
+          <div class="photo-placeholder-wrap">
+            <p style="color:#d9b8bf; font-size:0.9rem; margin-bottom:8px;">Choose a picture featuring both of you</p>
+            <button type="button" class="upload-btn-styled">📁 Choose Photo</button>
+          </div>
+          <input type="file" accept="image/*" style="display:none;" />
+          <div class="gender-detection-badge"></div>
+        </div>
+
+        <div class="memories-column-wrapper">
+          <label>Memory Story #${index}:</label>
+          <textarea rows="3" class="polaroid-caption-input" placeholder="e.g., The evening we got lost in the rain and ended up drinking hot tea under the awning laughing about everything..." required></textarea>
+        </div>
+      `;
+
+      const fileInput = card.querySelector('input[type="file"]');
+      const uploadBtn = card.querySelector('.upload-btn-styled');
+      const imgPreview = card.querySelector('.polaroid-img-preview');
+      const placeholder = card.querySelector('.photo-placeholder-wrap');
+      const badge = card.querySelector('.gender-detection-badge');
+
+      uploadBtn.addEventListener('click', () => fileInput.click());
+
+      fileInput.addEventListener('change', async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = async (event) => {
+          imgPreview.src = event.target.result;
+          imgPreview.style.display = 'block';
+          placeholder.style.display = 'none';
+
+          imgPreview.onload = async () => {
+            badge.style.display = 'block';
+            badge.textContent = "Scanning faces...";
+
+            const { males, females, total } = await analyzePhotoGender(imgPreview);
+            card.dataset.males = males;
+            card.dataset.females = females;
+            card.dataset.hasPhoto = 'true';
+
+            if (total === 0) {
+              badge.textContent = "⚠️ No faces detected! Make sure people are visible.";
+              badge.style.color = "#ff99aa";
+            } else {
+              badge.textContent = `✨ Detected: ${females} Girl, ${males} Boy`;
+              badge.style.color = "#f5d487";
+            }
+          };
+        };
+        reader.readAsDataURL(file);
+      });
+
+      const removeBtn = card.querySelector('.btn-remove-polaroid');
+      if (removeBtn) {
+        removeBtn.addEventListener('click', () => card.remove());
+      }
+
+      return card;
+    }
+
+    scrapbook.appendChild(createPolaroidCard(1));
+
+    addMemoryBtn.addEventListener('click', () => {
+      const count = scrapbook.querySelectorAll('.polaroid-frame').length + 1;
+      scrapbook.appendChild(createPolaroidCard(count));
+    });
+
+    /* 5. MEMORIES-BASED SENTIMENT & LOVE SCORE (NO RANDOM PERCENTAGES) */
+    function evaluateMemories(memoriesText, p1, p2) {
+      const text = memoriesText.toLowerCase();
+
+      // Semantic clusters:
+      const warmthSignals = ['coffee', 'rain', 'tea', 'hug', 'comfort', 'peace', 'warm', 'home', 'safe', 'cuddle', 'sunset', 'cooking', 'listening', 'walk', 'holding', 'hands', 'quiet', 'stars', 'night'];
+      const laughterSignals = ['laugh', 'laughter', 'funny', 'joke', 'smile', 'giggled', 'silly', 'crazy', 'tears', 'dancing', 'screamed', 'fun', 'trip', 'clumsy', 'food', 'car'];
+      const depthSignals = ['forever', 'soul', 'dream', 'life', 'always', 'marry', 'destiny', 'first time', 'heart', 'promise', 'cherish', 'patient', 'proud', 'love', 'grow', 'journey'];
+
+      let warmCount = 0;
+      let laughCount = 0;
+      let depthCount = 0;
+
+      warmthSignals.forEach(word => { if (text.includes(word)) warmCount++; });
+      laughterSignals.forEach(word => { if (text.includes(word)) laughCount++; });
+      depthSignals.forEach(word => { if (text.includes(word)) depthCount++; });
+
+      const wordCount = text.trim().split(/\s+/).filter(w => w.length > 0).length;
+
+      // Base calculated on genuine emotional richness
+      let baseWarmth = 84 + Math.min(13, warmCount * 2.5 + Math.floor(wordCount / 15));
+      let baseLaughter = 83 + Math.min(14, laughCount * 2.5 + Math.floor(wordCount / 18));
+      let baseDepth = 85 + Math.min(13, depthCount * 2.8 + Math.floor(wordCount / 14));
+
+      // Deterministic tie-in to their specific names
+      let nameSeed = 0;
+      const combined = (p1 + p2).toLowerCase();
+      for (let i = 0; i < combined.length; i++) nameSeed += combined.charCodeAt(i);
+
+      baseWarmth = Math.min(99, Math.round(baseWarmth + (nameSeed % 3)));
+      baseLaughter = Math.min(99, Math.round(baseLaughter + ((nameSeed * 2) % 3)));
+      baseDepth = Math.min(99, Math.round(baseDepth + ((nameSeed * 4) % 2)));
+
+      const finalLoveScore = Math.round((baseWarmth * 0.35) + (baseLaughter * 0.35) + (baseDepth * 0.30));
+
+      return {
+        score: finalLoveScore,
+        warmth: baseWarmth,
+        laughter: baseLaughter,
+        depth: baseDepth,
+        wordCount: wordCount
+      };
+    }
+
+    /* 6. SUBMISSION & RESULTS */
+    const form = document.getElementById('loveForm');
+    const resultsSection = document.getElementById('resultsSection');
+    const scoreVal = document.getElementById('scoreVal');
+    const verdictTitle = document.getElementById('verdictTitle');
+    const verdictDesc = document.getElementById('verdictDesc');
+    const mWarmth = document.getElementById('mWarmth');
+    const mLaughter = document.getElementById('mLaughter');
+    const mDestiny = document.getElementById('mDestiny');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const p1 = document.getElementById('partner1').value.trim();
+      const p2 = document.getElementById('partner2').value.trim();
+      const cards = scrapbook.querySelectorAll('.polaroid-frame');
+
+      let totalMales = 0;
+      let totalFemales = 0;
+      let missingPhoto = false;
+
+      cards.forEach(card => {
+        if (card.dataset.hasPhoto !== 'true') missingPhoto = true;
+        totalMales += parseInt(card.dataset.males || '0', 10);
+        totalFemales += parseInt(card.dataset.females || '0', 10);
+      });
+
+      if (missingPhoto) {
+        validationNotice.style.display = 'block';
+        validationNotice.className = 'validation-box error';
+        validationNotice.textContent = "📷 Please select a photo for each polaroid before running the meter.";
+        validationNotice.scrollIntoView({ behavior: 'smooth' });
+        return;
+      }
+
+      // Check: Must have a girl and a boy across uploaded photos
+      if (modelsLoaded && (totalFemales < 1 || totalMales < 1)) {
+        validationNotice.style.display = 'block';
+        validationNotice.className = 'validation-box error';
+        validationNotice.innerHTML = `⚠️ <strong>Boy & Girl Verification Required:</strong> Detected ${totalFemales} girl(s) and ${totalMales} boy(s). Please upload a clear photo showing both partners.`;
+        validationNotice.scrollIntoView({ behavior: 'smooth' });
+        return;
+      }
+
+      validationNotice.style.display = 'none';
+
+      // Gather memory texts
+      const textAreas = scrapbook.querySelectorAll('.polaroid-caption-input');
+      let combinedMemories = "";
+      textAreas.forEach(t => combinedMemories += t.value.trim() + " ");
+
+      // Calculate score purely from their actual stories
+      const evalData = evaluateMemories(combinedMemories, p1, p2);
+
+      resultsSection.style.display = 'block';
+      resultsSection.scrollIntoView({ behavior: 'smooth' });
+
+      // Animate score counter
+      let count = 0;
+      const timer = setInterval(() => {
+        if (count >= evalData.score) {
+          clearInterval(timer);
+        } else {
+          count++;
+          scoreVal.textContent = `${count}%`;
+        }
+      }, 20);
+
+      mWarmth.textContent = `${evalData.warmth}%`;
+      mLaughter.textContent = `${evalData.laughter}%`;
+      mDestiny.textContent = `${evalData.depth}%`;
+
+      // Specific narrative feedback generated from their written memories
+      if (evalData.score >= 96) {
+        verdictTitle.textContent = "Golden Hearth Solstice ⚜";
+        verdictDesc.textContent = `The stories ${p1} and ${p2} documented demonstrate deep mutual devotion. Your memories detail genuine care, comfort in quiet moments, and an unbreakable emotional foundation.`;
+      } else if (evalData.score >= 92) {
+        verdictTitle.textContent = "Twin Velvet Flames ✦";
+        verdictDesc.textContent = `Between ${p1} and ${p2}, your shared moments show radiant humor and effortless companionship. Each memory builds a joyful sanctuary where you both belong.`;
+      } else {
+        verdictTitle.textContent = "Gentle Starlight Resonance 🌙";
+        verdictDesc.textContent = `${p1} and ${p2} share tender milestones that reflect growth, loyalty, and affectionate understanding. Your journey together continues to deepen.`;
+      }
+    });
+  </script>
 </body>
 </html>
