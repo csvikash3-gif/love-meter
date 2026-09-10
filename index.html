@@ -433,7 +433,6 @@
       transition: all 0.8s ease;
     }
 
-    /* Negative Meter Theme Styles */
     .inner-heart-core.negative-mode {
       background: radial-gradient(circle, #2a0b12 0%, #0d0408 100%);
       border-color: #5b7a8c;
@@ -503,6 +502,39 @@
     .metric-name { font-size: 0.8rem; color: var(--text-muted); }
     .metric-box strong { font-family: var(--font-serif); font-size: 1.8rem; color: var(--gold-glow); }
     .metric-box strong.neg { color: var(--ice-blue); }
+
+    /* Download Action Container */
+    .download-dock {
+      margin-top: 1.5rem;
+      display: flex;
+      justify-content: center;
+    }
+
+    .download-btn {
+      background: linear-gradient(135deg, #f5d487 0%, #b88628 100%);
+      color: #190308;
+      border: 1px solid var(--gold-glow);
+      border-radius: 35px;
+      padding: 1rem 2.2rem;
+      font-family: var(--font-title);
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      cursor: pointer;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+      transition: all 0.3s ease;
+    }
+
+    .download-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(245, 212, 135, 0.45);
+    }
+
+    .download-btn.neg-mode {
+      background: linear-gradient(135deg, #7899aa 0%, #3d5666 100%);
+      color: #fdf5ec;
+      border-color: #88c9e8;
+    }
 
     @keyframes heartPulse {
       0%, 100% { transform: scale(1); opacity: 0.85; }
@@ -615,6 +647,13 @@
             <strong id="mHarmony">--%</strong>
           </div>
         </div>
+
+        <!-- Download Action -->
+        <div class="download-dock">
+          <button type="button" id="downloadKeepsakeBtn" class="download-btn">
+            📜 Download Love Chronicle Certificate (PNG)
+          </button>
+        </div>
       </section>
 
     </div>
@@ -718,7 +757,7 @@
       }
     });
 
-    /* 3. BOY & GIRL FACE-API DETECTION */
+    /* 3. BOY & GIRL FACE DETECTION */
     let modelsLoaded = false;
     async function loadModels() {
       const MODEL_URL = 'https://cdn.jsdelivr.net/npm/@vladmandic/face-api/model/';
@@ -727,7 +766,7 @@
         await faceapi.nets.ageGenderNet.loadFromUri(MODEL_URL);
         modelsLoaded = true;
       } catch (err) {
-        console.warn("Face-API CDN note: Fallback active.", err);
+        console.warn("Face-API note: Graceful fallback active.", err);
       }
     }
     window.addEventListener('load', loadModels);
@@ -743,7 +782,7 @@
       return { males, females, total: detections.length };
     }
 
-    /* 4. POLAROID SCRAPBOOK & MEMORIES COLUMN */
+    /* 4. POLAROID SCRAPBOOK COMPONENT */
     const scrapbook = document.getElementById('polaroidScrapbook');
     const addMemoryBtn = document.getElementById('addMemoryBtn');
     const validationNotice = document.getElementById('validationNotice');
@@ -829,13 +868,10 @@
       scrapbook.appendChild(createPolaroidCard(count));
     });
 
-    /* =========================================================
-       5. DUAL-POLAR SENTIMENT LOVE ENGINE (POSITIVE & NEGATIVE)
-    ========================================================= */
+    /* 5. SENTIMENT ENGINE */
     function evaluateMemorySentiment(memoriesText, p1, p2) {
       const text = memoriesText.toLowerCase();
 
-      // Positive Lexicon
       const positiveWords = [
         'happy', 'enjoy', 'enjoyed', 'laugh', 'laughter', 'love', 'smile', 'smiled',
         'cuddle', 'hug', 'safe', 'peace', 'warm', 'warmth', 'coffee', 'tea', 'sunset',
@@ -844,7 +880,6 @@
         'amazing', 'blessed', 'giggle', 'joke', 'dinner', 'cooking', 'stars', 'together'
       ];
 
-      // Negative & Toxic Lexicon
       const negativeWords = [
         'bad', 'fight', 'fought', 'argue', 'argued', 'argument', 'cried', 'crying',
         'tears', 'shout', 'shouted', 'screamed', 'yell', 'yelled', 'cheat', 'cheated',
@@ -866,26 +901,22 @@
       negativeWords.forEach(w => {
         const regex = new RegExp(`\\b${w}\\b`, 'g');
         const matches = text.match(regex);
-        if (matches) negScore += matches.length * 6.5; // Negative moments carry significant emotional gravity
+        if (matches) negScore += matches.length * 6.5;
       });
 
       const netDelta = posScore - negScore;
       let finalLoveScore = 0;
       let isNegative = false;
 
-      let subWarmth = 0;
-      let subJoy = 0;
-      let subHarmony = 0;
+      let subWarmth = 0, subJoy = 0, subHarmony = 0;
 
       if (netDelta >= 0) {
-        // Positive Spectrum: +70% to +99%
         isNegative = false;
         finalLoveScore = Math.min(99, Math.round(72 + Math.min(26, netDelta * 2.2)));
         subWarmth = Math.min(99, Math.round(finalLoveScore - 2 + (Math.abs(netDelta) % 4)));
         subJoy = Math.min(99, Math.round(finalLoveScore + (Math.abs(netDelta * 3) % 3)));
         subHarmony = Math.min(99, Math.round(finalLoveScore - 1 + (Math.abs(netDelta * 5) % 3)));
       } else {
-        // Negative Spectrum: -15% to -95%
         isNegative = true;
         const severity = Math.abs(netDelta);
         finalLoveScore = -Math.min(95, Math.round(18 + Math.min(76, severity * 2.8)));
@@ -903,7 +934,7 @@
       };
     }
 
-    /* 6. FORM SUBMISSION & DISPLAY RESULTS */
+    /* 6. FORM SUBMISSION & RESULTS HANDLING */
     const form = document.getElementById('loveForm');
     const resultsSection = document.getElementById('resultsSection');
     const scoreVal = document.getElementById('scoreVal');
@@ -912,6 +943,7 @@
     const heartCore = document.getElementById('heartCore');
     const vintageDial = document.getElementById('vintageDial');
     const heartIcon = document.getElementById('heartIcon');
+    const downloadBtn = document.getElementById('downloadKeepsakeBtn');
 
     const mWarmth = document.getElementById('mWarmth');
     const mJoy = document.getElementById('mJoy');
@@ -923,6 +955,9 @@
     const labelJoy = document.getElementById('labelJoy');
     const labelHarmony = document.getElementById('labelHarmony');
 
+    // Keep global cache for certificate generator
+    let currentReport = null;
+
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
 
@@ -930,9 +965,7 @@
       const p2 = document.getElementById('partner2').value.trim();
       const cards = scrapbook.querySelectorAll('.polaroid-frame');
 
-      let totalMales = 0;
-      let totalFemales = 0;
-      let missingPhoto = false;
+      let totalMales = 0, totalFemales = 0, missingPhoto = false;
 
       cards.forEach(card => {
         if (card.dataset.hasPhoto !== 'true') missingPhoto = true;
@@ -948,7 +981,6 @@
         return;
       }
 
-      // Check: Boy and Girl Verification
       if (modelsLoaded && (totalFemales < 1 || totalMales < 1)) {
         validationNotice.style.display = 'block';
         validationNotice.className = 'validation-box error';
@@ -959,18 +991,27 @@
 
       validationNotice.style.display = 'none';
 
-      // Gather memory texts
       const textAreas = scrapbook.querySelectorAll('.polaroid-caption-input');
       let combinedMemories = "";
       textAreas.forEach(t => combinedMemories += t.value.trim() + " ");
 
-      // Run Sentiment Analysis
       const evalData = evaluateMemorySentiment(combinedMemories, p1, p2);
+
+      // Save for certificate download
+      currentReport = {
+        partner1: p1,
+        partner2: p2,
+        score: evalData.score,
+        isNegative: evalData.isNegative,
+        warmth: evalData.warmth,
+        joy: evalData.joy,
+        harmony: evalData.harmony,
+        sampleMemory: textAreas[0] ? textAreas[0].value.trim() : ""
+      };
 
       resultsSection.style.display = 'block';
       resultsSection.scrollIntoView({ behavior: 'smooth' });
 
-      // Animate score transition
       let currentVal = 0;
       const targetVal = evalData.score;
       const step = evalData.isNegative ? -1 : 1;
@@ -988,13 +1029,13 @@
         }
       }, 20);
 
-      // Render Negative or Positive Dial Theme
       if (evalData.isNegative) {
         heartCore.classList.add('negative-mode');
         vintageDial.classList.add('negative-mode');
         heartIcon.classList.add('broken');
         heartIcon.textContent = "💔";
         scoreVal.classList.add('negative');
+        downloadBtn.classList.add('neg-mode');
 
         mWarmth.classList.add('neg');
         mJoy.classList.add('neg');
@@ -1019,6 +1060,7 @@
         heartIcon.classList.remove('broken');
         heartIcon.textContent = "♥";
         scoreVal.classList.remove('negative');
+        downloadBtn.classList.remove('neg-mode');
 
         mWarmth.classList.remove('neg');
         mJoy.classList.remove('neg');
@@ -1043,6 +1085,147 @@
           verdictDesc.textContent = `Between ${p1} and ${p2}, your shared moments show radiant joy, gentle safety, and sincere companionship. Your journey together carries boundless light.`;
         }
       }
+    });
+
+    /* =========================================================
+       7. CERTIFICATE DOWNLOAD ENGINE (HTML5 CANVAS)
+    ========================================================= */
+    downloadBtn.addEventListener('click', () => {
+      if (!currentReport) return;
+
+      const cCanvas = document.createElement('canvas');
+      cCanvas.width = 700;
+      cCanvas.height = 950;
+      const cCtx = cCanvas.getContext('2d');
+
+      const isNeg = currentReport.isNegative;
+
+      // 1. Background Gradient
+      const grad = cCtx.createRadialGradient(350, 475, 80, 350, 475, 520);
+      if (isNeg) {
+        grad.addColorStop(0, '#26141c');
+        grad.addColorStop(0.6, '#130c12');
+        grad.addColorStop(1, '#080507');
+      } else {
+        grad.addColorStop(0, '#480918');
+        grad.addColorStop(0.6, '#2f060f');
+        grad.addColorStop(1, '#190308');
+      }
+      cCtx.fillStyle = grad;
+      cCtx.fillRect(0, 0, 700, 950);
+
+      // 2. Borders & Corner Filigrees
+      const primaryColor = isNeg ? '#88c9e8' : '#f5d487';
+      const textColor = isNeg ? '#e1eff7' : '#fdf5ec';
+      const mutedColor = isNeg ? '#9cb1be' : '#d9b8bf';
+
+      cCtx.strokeStyle = primaryColor;
+      cCtx.lineWidth = 2.5;
+      cCtx.strokeRect(30, 30, 640, 890);
+
+      cCtx.lineWidth = 1;
+      cCtx.strokeRect(40, 40, 620, 870);
+
+      cCtx.fillStyle = primaryColor;
+      cCtx.font = '30px "Cinzel Decorative", serif';
+      cCtx.fillText('❧', 55, 75);
+      cCtx.fillText('☙', 625, 75);
+      cCtx.fillText('❧', 55, 890);
+      cCtx.fillText('☙', 625, 890);
+
+      // 3. Header
+      cCtx.textAlign = 'center';
+      cCtx.font = '20px "Cinzel Decorative", cursive';
+      cCtx.fillText(isNeg ? '✦ CHRONICLE OF FRACTURED ECHOES ✦' : '⚜ THE ETERNAL LOVE CHRONICLE ⚜', 350, 110);
+
+      // 4. Partner Names
+      cCtx.fillStyle = textColor;
+      cCtx.font = 'bold 36px "Italiana", serif';
+      cCtx.fillText(`${currentReport.partner1}   ${isNeg ? '💔' : '♥'}   ${currentReport.partner2}`, 350, 175);
+
+      // 5. Divider
+      cCtx.strokeStyle = primaryColor;
+      cCtx.beginPath();
+      cCtx.moveTo(220, 210);
+      cCtx.lineTo(480, 210);
+      cCtx.stroke();
+
+      // 6. Central Score Dial
+      cCtx.beginPath();
+      cCtx.arc(350, 340, 90, 0, Math.PI * 2);
+      cCtx.strokeStyle = isNeg ? 'rgba(136, 201, 232, 0.4)' : 'rgba(245, 212, 135, 0.4)';
+      cCtx.lineWidth = 3;
+      cCtx.stroke();
+
+      cCtx.fillStyle = primaryColor;
+      cCtx.font = 'bold 64px "Italiana", serif';
+      cCtx.fillText(`${currentReport.score > 0 ? '+' : ''}${currentReport.score}%`, 350, 350);
+
+      cCtx.font = '14px "Cinzel Decorative", serif';
+      cCtx.fillText('AFFINITY RESONANCE', 350, 385);
+
+      // 7. Metric Breakdown Boxes
+      cCtx.font = '16px "Marcellus", serif';
+      cCtx.fillStyle = mutedColor;
+
+      const labels = isNeg 
+        ? [`Frost: ${currentReport.warmth}%`, `Bitterness: ${currentReport.joy}%`, `Friction: ${currentReport.harmony}%`]
+        : [`Warmth: +${currentReport.warmth}%`, `Joy: +${currentReport.joy}%`, `Harmony: +${currentReport.harmony}%`];
+
+      cCtx.fillText(labels[0], 190, 480);
+      cCtx.fillText(labels[1], 350, 480);
+      cCtx.fillText(labels[2], 510, 480);
+
+      // 8. Memory Excerpt Box
+      if (currentReport.sampleMemory) {
+        cCtx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+        cCtx.strokeRect(80, 530, 540, 160);
+
+        cCtx.font = '13px "Cinzel Decorative", serif';
+        cCtx.fillStyle = primaryColor;
+        cCtx.fillText('CHRONICLED MEMORY', 350, 560);
+
+        cCtx.font = 'italic 20px "Caveat", cursive';
+        cCtx.fillStyle = textColor;
+        
+        // Wrap text
+        const words = currentReport.sampleMemory.split(' ');
+        let line = '';
+        let y = 600;
+        for (let n = 0; n < words.length; n++) {
+          const testLine = line + words[n] + ' ';
+          const metrics = cCtx.measureText(testLine);
+          if (metrics.width > 480 && n > 0) {
+            cCtx.fillText(line, 350, y);
+            line = words[n] + ' ';
+            y += 28;
+            if (y > 670) { line += '...'; break; }
+          } else {
+            line = testLine;
+          }
+        }
+        cCtx.fillText(line, 350, y);
+      }
+
+      // 9. Romantic / Somber Inscription
+      cCtx.font = 'italic 18px "Marcellus", serif';
+      cCtx.fillStyle = textColor;
+      cCtx.fillText(
+        isNeg ? '“Even in sorrow and winter, the past remains written.”' : '“Enshrined in velvet dusk, warmth, and an eternal flame.”',
+        350, 750
+      );
+
+      // 10. Seal & Date
+      const dateStr = new Date().toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
+      cCtx.font = '12px "Space Mono", monospace';
+      cCtx.fillStyle = primaryColor;
+      cCtx.fillText(`SEALED & WITNESSED ON ${dateStr.toUpperCase()}`, 350, 830);
+
+      // 11. Trigger Download
+      const link = document.createElement('a');
+      link.download = `${currentReport.partner1}_and_${currentReport.partner2}_love_chronicle.png`;
+      link.href = cCanvas.toDataURL('image/png');
+      link.click();
     });
   </script>
 </body>
