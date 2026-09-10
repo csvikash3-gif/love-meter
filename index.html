@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Eternal Velvet • Couple Love Chronicle</title>
+  <title>Eternal Velvet • Dynamic Love Meter</title>
 
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -22,6 +22,7 @@
       --gold-glow: #f5d487;
       --gold-dark: #b88628;
       --rose-crimson: #c93d58;
+      --ice-blue: #88c9e8;
       --polaroid-paper: #fffefb;
       --text-main: #fdf5ec;
       --text-muted: #d9b8bf;
@@ -146,7 +147,7 @@
     .subtitle {
       color: var(--text-muted);
       font-size: 1.05rem;
-      max-width: 520px;
+      max-width: 540px;
       margin: 0 auto;
       line-height: 1.6;
     }
@@ -291,7 +292,6 @@
       border: 1px solid var(--gold-dark);
     }
 
-    /* Column for Memories */
     .memories-column-wrapper {
       margin-top: 14px;
       text-align: left;
@@ -417,6 +417,7 @@
       border-radius: 50%;
       border: 2px dashed var(--gold-glow);
       animation: rotateRing 35s linear infinite;
+      transition: border-color 0.8s ease;
     }
 
     .inner-heart-core {
@@ -429,12 +430,29 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
+      transition: all 0.8s ease;
+    }
+
+    /* Negative Meter Theme Styles */
+    .inner-heart-core.negative-mode {
+      background: radial-gradient(circle, #2a0b12 0%, #0d0408 100%);
+      border-color: #5b7a8c;
+      box-shadow: 0 0 30px rgba(91, 122, 140, 0.45);
+    }
+    .vintage-dial-ring.negative-mode {
+      border-color: #5b7a8c;
     }
 
     .beating-heart {
       font-size: 2.2rem;
       color: var(--rose-crimson);
       animation: heartPulse 1.2s infinite ease-in-out;
+      transition: color 0.5s;
+    }
+
+    .beating-heart.broken {
+      color: #60727c;
+      animation: glitchSway 2.5s infinite ease-in-out;
     }
 
     .meter-percentage {
@@ -442,6 +460,11 @@
       font-size: 2.6rem;
       color: var(--gold-glow);
       margin-top: 2px;
+      transition: color 0.5s;
+    }
+
+    .meter-percentage.negative {
+      color: var(--ice-blue);
     }
 
     .verdict-title {
@@ -479,10 +502,15 @@
     }
     .metric-name { font-size: 0.8rem; color: var(--text-muted); }
     .metric-box strong { font-family: var(--font-serif); font-size: 1.8rem; color: var(--gold-glow); }
+    .metric-box strong.neg { color: var(--ice-blue); }
 
     @keyframes heartPulse {
       0%, 100% { transform: scale(1); opacity: 0.85; }
       50% { transform: scale(1.22); opacity: 1; }
+    }
+    @keyframes glitchSway {
+      0%, 100% { transform: rotate(0deg) scale(0.95); opacity: 0.7; }
+      50% { transform: rotate(-8deg) scale(0.9); opacity: 0.45; }
     }
     @keyframes rotateRing {
       from { transform: rotate(0deg); }
@@ -522,7 +550,7 @@
         <div class="filigree-crown">⚜ ✦ ⚜</div>
         <h1 class="ornate-title">Our Love Chronicle</h1>
         <div class="gold-divider"><span>◆</span></div>
-        <p class="subtitle">Upload photos of both a girl and a boy. Fill in your genuine best memories to unveil an authentic love score calculated entirely from your journey.</p>
+        <p class="subtitle">Upload photos of both a girl and a boy. Chronicle your honest memories: joyful memories blossom with high love, while bitter or toxic memories will cause the meter to plunge into negative values.</p>
       </header>
 
       <form id="loveForm" class="centered-form">
@@ -537,7 +565,7 @@
 
         <div class="input-block">
           <label class="gold-label">Memories & Couple Polaroids</label>
-          <p class="section-hint">Photo verification requires both partners (1 Female & 1 Male). The Love Meter percentage is calculated strictly from your written memories!</p>
+          <p class="section-hint">Photo verification checks for both partners (1 Female & 1 Male). The Love Meter percentage is evaluated strictly from the emotional truth of your written memories!</p>
 
           <div id="polaroidScrapbook" class="polaroids-grid">
             <!-- Dynamic Polaroid cards appear here -->
@@ -560,9 +588,9 @@
         <div class="gold-divider"><span>✦ ⚜ ✦</span></div>
 
         <div class="meter-frame">
-          <div class="vintage-dial-ring"></div>
-          <div class="inner-heart-core">
-            <div class="beating-heart">♥</div>
+          <div class="vintage-dial-ring" id="vintageDial"></div>
+          <div class="inner-heart-core" id="heartCore">
+            <div class="beating-heart" id="heartIcon">♥</div>
             <span class="meter-percentage" id="scoreVal">0%</span>
           </div>
         </div>
@@ -572,19 +600,19 @@
 
         <div class="metrics-row">
           <div class="metric-box">
-            <span>🍷</span>
-            <span class="metric-name">Warmth & Home</span>
+            <span id="iconWarmth">🍷</span>
+            <span class="metric-name" id="labelWarmth">Warmth & Home</span>
             <strong id="mWarmth">--%</strong>
           </div>
           <div class="metric-box">
-            <span>✨</span>
-            <span class="metric-name">Shared Laughter</span>
-            <strong id="mLaughter">--%</strong>
+            <span id="iconJoy">✨</span>
+            <span class="metric-name" id="labelJoy">Joy Resonance</span>
+            <strong id="mJoy">--%</strong>
           </div>
           <div class="metric-box">
-            <span>🪐</span>
-            <span class="metric-name">Emotional Gravity</span>
-            <strong id="mDestiny">--%</strong>
+            <span id="iconHarmony">🪐</span>
+            <span class="metric-name" id="labelHarmony">Harmony Index</span>
+            <strong id="mHarmony">--%</strong>
           </div>
         </div>
       </section>
@@ -651,7 +679,7 @@
     }
     animateHearts();
 
-    /* 2. AMBIENT SOUND */
+    /* 2. AMBIENT RAIN SOUND */
     let audioCtx = null, soundOn = false, noiseNode = null;
     const rainBtn = document.getElementById('rainToggle');
     rainBtn.addEventListener('click', () => {
@@ -690,7 +718,7 @@
       }
     });
 
-    /* 3. FACE & GENDER DETECTION SETUP (Boy & Girl Check) */
+    /* 3. BOY & GIRL FACE-API DETECTION */
     let modelsLoaded = false;
     async function loadModels() {
       const MODEL_URL = 'https://cdn.jsdelivr.net/npm/@vladmandic/face-api/model/';
@@ -699,13 +727,13 @@
         await faceapi.nets.ageGenderNet.loadFromUri(MODEL_URL);
         modelsLoaded = true;
       } catch (err) {
-        console.warn("Face model CDN note: Fallback enabled.", err);
+        console.warn("Face-API CDN note: Fallback active.", err);
       }
     }
     window.addEventListener('load', loadModels);
 
     async function analyzePhotoGender(img) {
-      if (!modelsLoaded) return { males: 1, females: 1 }; // graceful fallback
+      if (!modelsLoaded) return { males: 1, females: 1 };
       const detections = await faceapi.detectAllFaces(img, new faceapi.TinyFaceDetectorOptions()).withAgeAndGender();
       let males = 0, females = 0;
       detections.forEach(d => {
@@ -743,7 +771,7 @@
 
         <div class="memories-column-wrapper">
           <label>Memory Story #${index}:</label>
-          <textarea rows="3" class="polaroid-caption-input" placeholder="e.g., The evening we got lost in the rain and ended up drinking hot tea under the awning laughing about everything..." required></textarea>
+          <textarea rows="3" class="polaroid-caption-input" placeholder="Describe the truth of this memory (good, bad, happy, or hurtful)..." required></textarea>
         </div>
       `;
 
@@ -801,59 +829,99 @@
       scrapbook.appendChild(createPolaroidCard(count));
     });
 
-    /* 5. MEMORIES-BASED SENTIMENT & LOVE SCORE (NO RANDOM PERCENTAGES) */
-    function evaluateMemories(memoriesText, p1, p2) {
+    /* =========================================================
+       5. DUAL-POLAR SENTIMENT LOVE ENGINE (POSITIVE & NEGATIVE)
+    ========================================================= */
+    function evaluateMemorySentiment(memoriesText, p1, p2) {
       const text = memoriesText.toLowerCase();
 
-      // Semantic clusters:
-      const warmthSignals = ['coffee', 'rain', 'tea', 'hug', 'comfort', 'peace', 'warm', 'home', 'safe', 'cuddle', 'sunset', 'cooking', 'listening', 'walk', 'holding', 'hands', 'quiet', 'stars', 'night'];
-      const laughterSignals = ['laugh', 'laughter', 'funny', 'joke', 'smile', 'giggled', 'silly', 'crazy', 'tears', 'dancing', 'screamed', 'fun', 'trip', 'clumsy', 'food', 'car'];
-      const depthSignals = ['forever', 'soul', 'dream', 'life', 'always', 'marry', 'destiny', 'first time', 'heart', 'promise', 'cherish', 'patient', 'proud', 'love', 'grow', 'journey'];
+      // Positive Lexicon
+      const positiveWords = [
+        'happy', 'enjoy', 'enjoyed', 'laugh', 'laughter', 'love', 'smile', 'smiled',
+        'cuddle', 'hug', 'safe', 'peace', 'warm', 'warmth', 'coffee', 'tea', 'sunset',
+        'kiss', 'holding', 'hands', 'dance', 'dancing', 'trip', 'travel', 'sweet',
+        'beautiful', 'cherish', 'forever', 'fun', 'kind', 'proud', 'caring', 'home',
+        'amazing', 'blessed', 'giggle', 'joke', 'dinner', 'cooking', 'stars', 'together'
+      ];
 
-      let warmCount = 0;
-      let laughCount = 0;
-      let depthCount = 0;
+      // Negative & Toxic Lexicon
+      const negativeWords = [
+        'bad', 'fight', 'fought', 'argue', 'argued', 'argument', 'cried', 'crying',
+        'tears', 'shout', 'shouted', 'screamed', 'yell', 'yelled', 'cheat', 'cheated',
+        'cheating', 'lie', 'lied', 'liar', 'fake', 'hate', 'hated', 'broken', 'broke',
+        'pain', 'painful', 'sad', 'sadness', 'betray', 'betrayed', 'betrayal', 'leave',
+        'left', 'abandon', 'ignore', 'ignored', 'toxic', 'hurt', 'hurts', 'regret',
+        'angry', 'anger', 'worst', 'jealous', 'cold', 'ruined', 'ugly', 'distance', 'lonely'
+      ];
 
-      warmthSignals.forEach(word => { if (text.includes(word)) warmCount++; });
-      laughterSignals.forEach(word => { if (text.includes(word)) laughCount++; });
-      depthSignals.forEach(word => { if (text.includes(word)) depthCount++; });
+      let posScore = 0;
+      let negScore = 0;
 
-      const wordCount = text.trim().split(/\s+/).filter(w => w.length > 0).length;
+      positiveWords.forEach(w => {
+        const regex = new RegExp(`\\b${w}\\b`, 'g');
+        const matches = text.match(regex);
+        if (matches) posScore += matches.length * 4.5;
+      });
 
-      // Base calculated on genuine emotional richness
-      let baseWarmth = 84 + Math.min(13, warmCount * 2.5 + Math.floor(wordCount / 15));
-      let baseLaughter = 83 + Math.min(14, laughCount * 2.5 + Math.floor(wordCount / 18));
-      let baseDepth = 85 + Math.min(13, depthCount * 2.8 + Math.floor(wordCount / 14));
+      negativeWords.forEach(w => {
+        const regex = new RegExp(`\\b${w}\\b`, 'g');
+        const matches = text.match(regex);
+        if (matches) negScore += matches.length * 6.5; // Negative moments carry significant emotional gravity
+      });
 
-      // Deterministic tie-in to their specific names
-      let nameSeed = 0;
-      const combined = (p1 + p2).toLowerCase();
-      for (let i = 0; i < combined.length; i++) nameSeed += combined.charCodeAt(i);
+      const netDelta = posScore - negScore;
+      let finalLoveScore = 0;
+      let isNegative = false;
 
-      baseWarmth = Math.min(99, Math.round(baseWarmth + (nameSeed % 3)));
-      baseLaughter = Math.min(99, Math.round(baseLaughter + ((nameSeed * 2) % 3)));
-      baseDepth = Math.min(99, Math.round(baseDepth + ((nameSeed * 4) % 2)));
+      let subWarmth = 0;
+      let subJoy = 0;
+      let subHarmony = 0;
 
-      const finalLoveScore = Math.round((baseWarmth * 0.35) + (baseLaughter * 0.35) + (baseDepth * 0.30));
+      if (netDelta >= 0) {
+        // Positive Spectrum: +70% to +99%
+        isNegative = false;
+        finalLoveScore = Math.min(99, Math.round(72 + Math.min(26, netDelta * 2.2)));
+        subWarmth = Math.min(99, Math.round(finalLoveScore - 2 + (Math.abs(netDelta) % 4)));
+        subJoy = Math.min(99, Math.round(finalLoveScore + (Math.abs(netDelta * 3) % 3)));
+        subHarmony = Math.min(99, Math.round(finalLoveScore - 1 + (Math.abs(netDelta * 5) % 3)));
+      } else {
+        // Negative Spectrum: -15% to -95%
+        isNegative = true;
+        const severity = Math.abs(netDelta);
+        finalLoveScore = -Math.min(95, Math.round(18 + Math.min(76, severity * 2.8)));
+        subWarmth = Math.max(-95, Math.round(finalLoveScore - 4));
+        subJoy = Math.max(-95, Math.round(finalLoveScore - 6));
+        subHarmony = Math.max(-95, Math.round(finalLoveScore + 3));
+      }
 
       return {
         score: finalLoveScore,
-        warmth: baseWarmth,
-        laughter: baseLaughter,
-        depth: baseDepth,
-        wordCount: wordCount
+        isNegative: isNegative,
+        warmth: subWarmth,
+        joy: subJoy,
+        harmony: subHarmony
       };
     }
 
-    /* 6. SUBMISSION & RESULTS */
+    /* 6. FORM SUBMISSION & DISPLAY RESULTS */
     const form = document.getElementById('loveForm');
     const resultsSection = document.getElementById('resultsSection');
     const scoreVal = document.getElementById('scoreVal');
     const verdictTitle = document.getElementById('verdictTitle');
     const verdictDesc = document.getElementById('verdictDesc');
+    const heartCore = document.getElementById('heartCore');
+    const vintageDial = document.getElementById('vintageDial');
+    const heartIcon = document.getElementById('heartIcon');
+
     const mWarmth = document.getElementById('mWarmth');
-    const mLaughter = document.getElementById('mLaughter');
-    const mDestiny = document.getElementById('mDestiny');
+    const mJoy = document.getElementById('mJoy');
+    const mHarmony = document.getElementById('mHarmony');
+    const iconWarmth = document.getElementById('iconWarmth');
+    const iconJoy = document.getElementById('iconJoy');
+    const iconHarmony = document.getElementById('iconHarmony');
+    const labelWarmth = document.getElementById('labelWarmth');
+    const labelJoy = document.getElementById('labelJoy');
+    const labelHarmony = document.getElementById('labelHarmony');
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -875,16 +943,16 @@
       if (missingPhoto) {
         validationNotice.style.display = 'block';
         validationNotice.className = 'validation-box error';
-        validationNotice.textContent = "📷 Please select a photo for each polaroid before running the meter.";
+        validationNotice.textContent = "📷 Please upload a photo for each polaroid before consulting the meter.";
         validationNotice.scrollIntoView({ behavior: 'smooth' });
         return;
       }
 
-      // Check: Must have a girl and a boy across uploaded photos
+      // Check: Boy and Girl Verification
       if (modelsLoaded && (totalFemales < 1 || totalMales < 1)) {
         validationNotice.style.display = 'block';
         validationNotice.className = 'validation-box error';
-        validationNotice.innerHTML = `⚠️ <strong>Boy & Girl Verification Required:</strong> Detected ${totalFemales} girl(s) and ${totalMales} boy(s). Please upload a clear photo showing both partners.`;
+        validationNotice.innerHTML = `⚠️ <strong>Boy & Girl Verification Required:</strong> Detected ${totalFemales} girl(s) and ${totalMales} boy(s). Please ensure both partners are pictured.`;
         validationNotice.scrollIntoView({ behavior: 'smooth' });
         return;
       }
@@ -896,37 +964,84 @@
       let combinedMemories = "";
       textAreas.forEach(t => combinedMemories += t.value.trim() + " ");
 
-      // Calculate score purely from their actual stories
-      const evalData = evaluateMemories(combinedMemories, p1, p2);
+      // Run Sentiment Analysis
+      const evalData = evaluateMemorySentiment(combinedMemories, p1, p2);
 
       resultsSection.style.display = 'block';
       resultsSection.scrollIntoView({ behavior: 'smooth' });
 
-      // Animate score counter
-      let count = 0;
+      // Animate score transition
+      let currentVal = 0;
+      const targetVal = evalData.score;
+      const step = evalData.isNegative ? -1 : 1;
+
+      scoreVal.textContent = "0%";
       const timer = setInterval(() => {
-        if (count >= evalData.score) {
+        if ((evalData.isNegative && currentVal <= targetVal) || (!evalData.isNegative && currentVal >= targetVal)) {
           clearInterval(timer);
+          scoreVal.textContent = `${targetVal}%`;
         } else {
-          count++;
-          scoreVal.textContent = `${count}%`;
+          currentVal += step * 2;
+          if (evalData.isNegative && currentVal < targetVal) currentVal = targetVal;
+          if (!evalData.isNegative && currentVal > targetVal) currentVal = targetVal;
+          scoreVal.textContent = `${currentVal}%`;
         }
       }, 20);
 
-      mWarmth.textContent = `${evalData.warmth}%`;
-      mLaughter.textContent = `${evalData.laughter}%`;
-      mDestiny.textContent = `${evalData.depth}%`;
+      // Render Negative or Positive Dial Theme
+      if (evalData.isNegative) {
+        heartCore.classList.add('negative-mode');
+        vintageDial.classList.add('negative-mode');
+        heartIcon.classList.add('broken');
+        heartIcon.textContent = "💔";
+        scoreVal.classList.add('negative');
 
-      // Specific narrative feedback generated from their written memories
-      if (evalData.score >= 96) {
-        verdictTitle.textContent = "Golden Hearth Solstice ⚜";
-        verdictDesc.textContent = `The stories ${p1} and ${p2} documented demonstrate deep mutual devotion. Your memories detail genuine care, comfort in quiet moments, and an unbreakable emotional foundation.`;
-      } else if (evalData.score >= 92) {
-        verdictTitle.textContent = "Twin Velvet Flames ✦";
-        verdictDesc.textContent = `Between ${p1} and ${p2}, your shared moments show radiant humor and effortless companionship. Each memory builds a joyful sanctuary where you both belong.`;
+        mWarmth.classList.add('neg');
+        mJoy.classList.add('neg');
+        mHarmony.classList.add('neg');
+
+        mWarmth.textContent = `${evalData.warmth}%`;
+        mJoy.textContent = `${evalData.joy}%`;
+        mHarmony.textContent = `${evalData.harmony}%`;
+
+        iconWarmth.textContent = "❄️";
+        labelWarmth.textContent = "Emotional Frost";
+        iconJoy.textContent = "🥀";
+        labelJoy.textContent = "Bitterness Index";
+        iconHarmony.textContent = "⚡";
+        labelHarmony.textContent = "Friction & Hurt";
+
+        verdictTitle.textContent = "Fractured Echoes 💔";
+        verdictDesc.textContent = `The chronicle recorded between ${p1} and ${p2} reflects unresolved hurt, painful friction, or emotional distance. The memories recount moments of distress rather than sanctuary, plunging the affinity meter into negative values.`;
       } else {
-        verdictTitle.textContent = "Gentle Starlight Resonance 🌙";
-        verdictDesc.textContent = `${p1} and ${p2} share tender milestones that reflect growth, loyalty, and affectionate understanding. Your journey together continues to deepen.`;
+        heartCore.classList.remove('negative-mode');
+        vintageDial.classList.remove('negative-mode');
+        heartIcon.classList.remove('broken');
+        heartIcon.textContent = "♥";
+        scoreVal.classList.remove('negative');
+
+        mWarmth.classList.remove('neg');
+        mJoy.classList.remove('neg');
+        mHarmony.classList.remove('neg');
+
+        mWarmth.textContent = `+${evalData.warmth}%`;
+        mJoy.textContent = `+${evalData.joy}%`;
+        mHarmony.textContent = `+${evalData.harmony}%`;
+
+        iconWarmth.textContent = "🍷";
+        labelWarmth.textContent = "Warmth & Home";
+        iconJoy.textContent = "✨";
+        labelJoy.textContent = "Joy Resonance";
+        iconHarmony.textContent = "🪐";
+        labelHarmony.textContent = "Harmony Index";
+
+        if (evalData.score >= 93) {
+          verdictTitle.textContent = "Twin Velvet Flames ⚜";
+          verdictDesc.textContent = `The stories ${p1} and ${p2} documented overflow with pure warmth, laughter, and tender devotion. Every shared moment builds an unbreakable sanctuary where you both belong.`;
+        } else {
+          verdictTitle.textContent = "Golden Hearth Harmony ✦";
+          verdictDesc.textContent = `Between ${p1} and ${p2}, your shared moments show radiant joy, gentle safety, and sincere companionship. Your journey together carries boundless light.`;
+        }
       }
     });
   </script>
