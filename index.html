@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Eternal Velvet • Romantic Love Meter</title>
+
+  <!-- Google Fonts: Luxury Serif & Romantic Handwriting -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Cinzel+Decorative:wght@700&family=Italiana&family=Marcellus&family=Space+Mono&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- Floating Hearts on the Sides -->
+  <canvas id="heartsCanvas"></canvas>
+
+  <!-- Sound Toggle -->
+  <div class="top-bar">
+    <button id="rainToggle" class="gold-pill-btn" type="button">
+      <span>🌧️ Ambient Rain: Off</span>
+    </button>
+  </div>
+
+  <main class="page-wrapper">
+    <!-- Ornate Card Wrapper -->
+    <div class="velvet-card">
+      
+      <!-- Victorian Gold Corner Ornaments -->
+      <div class="corner-ornament top-left">❧</div>
+      <div class="corner-ornament top-right">☙</div>
+      <div class="corner-ornament bottom-left">❧</div>
+      <div class="corner-ornament bottom-right">☙</div>
+
+      <!-- Header -->
+      <header class="card-header">
+        <div class="filigree-crown">⚜ ✦ ⚜</div>
+        <h1 class="ornate-title">Our Love Chronicle</h1>
+        <div class="gold-divider">
+          <span>◆</span>
+        </div>
+        <p class="subtitle">Immortalize your sweetest memories and discover your souls' resonance.</p>
+      </header>
+
+      <!-- Center-Aligned Form -->
+      <form id="loveForm" class="centered-form">
+        
+        <!-- Names Section -->
+        <div class="input-block">
+          <label class="gold-label">Whose hearts are joined?</label>
+          <div class="names-row">
+            <input type="text" id="partner1" placeholder="First Name..." required />
+            <div class="heart-pulse-icon">♥</div>
+            <input type="text" id="partner2" placeholder="Second Name..." required />
+          </div>
+        </div>
+
+        <!-- Polaroid Memories Creator -->
+        <div class="input-block">
+          <label class="gold-label">Our Cherished Moments</label>
+          <p class="section-hint">Upload snapshots from your journey to preserve them as classic Polaroids.</p>
+          
+          <div id="polaroidScrapbook" class="polaroids-grid">
+            <!-- Dynamic Polaroid cards appear here -->
+          </div>
+
+          <button type="button" id="addMemoryBtn" class="gold-outline-btn">
+            + Pin Another Polaroid Memory
+          </button>
+        </div>
+
+        <!-- Secret Note -->
+        <div class="input-block secret-block">
+          <details>
+            <summary>💌 Click to enclose a secret love note...</summary>
+            <textarea id="secretNote" rows="3" placeholder="This sweet whisper stays hidden until the meter is calculated..."></textarea>
+          </details>
+        </div>
+
+        <!-- Calculate Trigger Button -->
+        <button type="submit" class="calculate-btn">
+          <span class="btn-text">Reveal Our Love Meter</span>
+          <span class="btn-glow"></span>
+        </button>
+
+      </form>
+
+      <!-- Results Display -->
+      <section id="resultsSection" class="results-panel" style="display: none;">
+        <div class="gold-divider"><span>✦ ⚜ ✦</span></div>
+
+        <!-- Ornate Circular Meter -->
+        <div class="meter-frame">
+          <div class="vintage-dial-ring"></div>
+          <div class="inner-heart-core">
+            <div class="beating-heart" id="beatingHeart">♥</div>
+            <span class="meter-percentage" id="scoreVal">0%</span>
+            <span class="meter-sub">Affinity</span>
+          </div>
+        </div>
+
+        <h2 id="verdictTitle" class="verdict-title">Velvet Constellation</h2>
+        <p id="verdictDesc" class="verdict-description"></p>
+
+        <!-- Metric Cards -->
+        <div class="metrics-row">
+          <div class="metric-box">
+            <span class="metric-icon">🍷</span>
+            <span class="metric-name">Warmth & Hearth</span>
+            <strong id="mWarmth">--%</strong>
+          </div>
+          <div class="metric-box">
+            <span class="metric-icon">✨</span>
+            <span class="metric-name">Shared Laughter</span>
+            <strong id="mLaughter">--%</strong>
+          </div>
+          <div class="metric-box">
+            <span class="metric-icon">🪐</span>
+            <span class="metric-name">Destiny Index</span>
+            <strong id="mDestiny">--%</strong>
+          </div>
+        </div>
+
+        <!-- Secret Letter Unlocked -->
+        <div id="unlockedLetterCard" class="unlocked-parchment" style="display: none;">
+          <div class="wax-seal">⚜</div>
+          <p id="unlockedLetterText"></p>
+        </div>
+
+        <!-- Save As Image Button -->
+        <div class="save-dock">
+          <button type="button" id="saveKeepsakeBtn" class="gold-outline-btn">
+            📜 Save Our Keepsake Certificate (PNG)
+          </button>
+        </div>
+
+      </section>
+
+    </div>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
